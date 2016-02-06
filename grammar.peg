@@ -1,0 +1,121 @@
+Query
+  = key:Key? table:Table fields:Fields? options:Options? filters:Filters? {
+  	return {
+      key: key,
+      table: table,
+      fields: fields,
+      options: options,
+      filters: (filters) ? (filters[0] || []) : []
+    };
+  }
+
+Key
+  = name:Path ":" { return name; }
+
+Filters
+  = "?" expressions:Expression+ {
+    return expressions;
+  }
+
+Expression
+  = head:Term tail:(OrOperator Term)* {
+    if (tail.length) {
+      return { operator : "|", operands: [head].concat(tail.map(function(x) { return x[1]; })) };
+    } else {
+      return head;
+    }
+  }
+
+Term
+  = head:Factor tail:(AndOperator Factor)* {
+    if (tail.length) {
+      return { operator : "&", operands: [head].concat(tail.map(function(x) { return x[1]; })) };
+    } else {
+      return head;
+    }
+  }
+
+Factor
+  = LeftParen expression:Expression RightParen { return expression; }
+  / Statement
+
+AndOperator
+  = ("&" / "&&") { return text(); }
+
+OrOperator
+  = ("|" / "||") { return text(); }
+
+LeftParen
+  = "(" { return text(); }
+
+RightParen
+  = ")" { return text(); }
+
+Options
+  = head:"[" body:Statement+ tail:"]" {
+    return body;
+  }
+
+Statement
+  = key:Word predicate:(Predicate / Regex) {
+    return {
+      key: key,
+      comparator: predicate.comparator,
+      value: predicate.value
+    }
+  }
+
+Predicate
+ = comparator:Comparator value:("+" / "-" / "*" / String / Path / Number)+ ","? {
+   return {
+     value: value.join(""),
+     comparator: comparator
+   }
+ }
+
+Regex
+ = "~" expression:RegexExpression flags:([gim]*) {
+   return {
+     value: expression + flags.join(""),
+     comparator: "~"
+   }
+}
+
+RegexExpression
+ = "/" ("\\\/" / [^/])+ "/" { return text() }
+
+Comparator
+ = ("=" / "<=" / "<" / ">=" / ">") { return text(); }
+
+Fields
+  = head:"{" body:Field+ tail:"}" {
+  	return body;
+  }
+
+Field
+  = path:Path ","? {
+    return path;
+  }
+
+Table
+  = head:"/"? tail:(Path / "/")* {
+  	return tail.join("");
+  }
+
+Path
+  = Word ("."? Word)* { return text(); }
+
+Word
+  = (Variable / Template)
+
+Template
+  = "{{" [^{] [^}]* "}}" { return text(); }
+
+Variable
+  = [a-zA-Z_$][0-9a-zA-Z_$]* { return text(); }
+
+String
+  = "\"" [^\"]+ "\"" { return text(); }
+
+Number
+  = [0-9]+ "."? [0-9]* { return parseFloat(text()); }
