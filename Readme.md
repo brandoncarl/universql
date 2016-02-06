@@ -38,7 +38,7 @@ For an example implementation, please visit https://github.com/brandoncarl/unive
 ## Examples
 
 For more extensive examples, please visit our
-[Reference Page](https://github.com/brandoncarl/universql/blob/master/Readme.md).
+[Reference Page](https://github.com/brandoncarl/universql/blob/master/Reference.md).
 
 #### Read
 
