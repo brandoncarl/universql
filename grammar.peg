@@ -115,7 +115,13 @@ Variable
   = [a-zA-Z_$][0-9a-zA-Z_$]* { return text(); }
 
 String
+  = (SingleQuoteString / DoubleQuoteString)
+
+DoubleQuoteString
   = "\"" [^\"]+ "\"" { return text(); }
+
+SingleQuoteString
+  = "'" [^']+ "'" { return text(); }
 
 Number
   = [0-9]+ "."? [0-9]* { return parseFloat(text()); }
