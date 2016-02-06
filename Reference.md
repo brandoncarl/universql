@@ -26,6 +26,8 @@ Prefixes allow us to quickly create, update, delete and describe entities.
 
 #### Examples
 
+These examples originated in RethinkDB's [excellent cookbook](https://www.rethinkdb.com/docs/sql-to-reql/javascript/).
+
 **Select all fields**
 ```coffee
 # UniversQL
@@ -576,6 +578,8 @@ r.table("posts").innerJoin(
 }).zip()
 ```
 
+
+#### Below here, incomplete!
 
 ```
 p:posts=|u:users(p.user_id=u.id)
