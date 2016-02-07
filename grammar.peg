@@ -122,9 +122,20 @@ Comparator
  = ("=" / "<=" / "<" / ">=" / ">") { return text(); }
 
 Fields
-  = head:"{" body:Field+ tail:"}" {
-  	return body;
+  = head:"{" body:((Function / Field) ","?)+ tail:"}" {
+  	return body.map(function(x) { return x[0] });
   }
+
+Function
+  = command:Command "(" field:Field? ")" {
+    return {
+      command: command,
+      field: field
+    }
+  }
+
+Command
+  = "count"i / "sum"i / "avg"i / "mean"i / "average"i / "max"i / "min"i
 
 Field
   = path:Path ","? {
