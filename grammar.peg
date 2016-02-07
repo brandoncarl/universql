@@ -74,9 +74,21 @@ Predicate
  }
 
 Regex
- = "~" expression:RegexExpression flags:([gim]*) {
+  = TrueRegex / FakeRegex
+
+FakeRegex
+  = ("~") [\"']? value:([A-Za-z]* "*" [A-Za-z\*]*) [\"']? {
+    return {
+      value: "/" + (value[0].join("") + value[1] + value[2].join("")).replace(/\*+/g, ".*") + "/",
+      comparator: "~"
+    }
+  }
+
+TrueRegex
+ = ("~" / "=") value:RegexExpression flags:([gim]*) {
    return {
-     value: expression + flags.join(""),
+     flags: flags.join(""),
+     value: value,
      comparator: "~"
    }
 }
