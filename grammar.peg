@@ -97,10 +97,36 @@ Field
     return path;
   }
 
-Table
-  = head:"/"? tail:(Path / "/")* {
-  	return tail.join("");
+NamedTables
+  = table:NamedTable joins:(JoinedTable)* {
+    if (joins.length) {
+      return { table: table, joins: joins };
+    } else {
+      return { table : table };
+    }
   }
+
+JoinedTable
+  = join:Join table:NamedTable {
+    return {
+      join: join,
+      table: table
+    }
+  }
+
+Join
+  = ("," / "=" / "|=" / "=|" / "|=|")
+
+NamedTable
+  = (name:Path ":")? table:Table {
+    return {
+      name: name,
+      table: table
+    }
+  }
+
+Table
+  = (Path / "/")* { return text() }
 
 Path
   = Word ("."? Word)* { return text(); }
