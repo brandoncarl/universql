@@ -1,16 +1,38 @@
 Query
-  = key:Key? table:Table fields:Fields? options:Options? filters:Filters? {
-  	return {
-      key: key,
-      table: table,
-      fields: fields,
-      options: options,
-      filters: (filters) ? (filters[0] || []) : []
-    };
+  = ShortQuery / MediumQuery / FullQuery
+
+ShortQuery
+  = command:Command "(" table:Table ")" {
+    return {
+      type: "short",
+      command: command,
+      table: table
+    }
   }
 
-Key
-  = name:Path ":" { return name; }
+MediumQuery
+  = table:Table "(" field:Field? ")" {
+    var parts = table.split(".");
+    return {
+      type: "medium",
+      table: parts.slice(0,-1).join("."),
+      command: parts[parts.length-1],
+      field: field
+    }
+  }
+
+FullQuery
+  = prefix:Prefix? tables:NamedTables fields:Fields? options:Options? filters:Filters? suffix:Suffix? {
+  	return {
+      type: "full",
+      prefix: prefix,
+      tables: tables,
+      fields: fields,
+      options: options,
+      filters: (filters) ? (filters[0] || []) : [],
+      suffix: suffix
+    };
+  }
 
 Filters
   = "?" expressions:Expression+ {
