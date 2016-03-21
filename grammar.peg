@@ -119,7 +119,7 @@ RegexExpression
  = "/" ("\\\/" / [^/])+ "/" { return text() }
 
 Comparator
- = ("=" / "<=" / "<" / ">=" / ">") { return text(); }
+ = ("=" / "<=" / "<" / ">=" / ">" / "!=") { return text(); }
 
 Fields
   = head:"{" body:((Function / Field) ","?)+ tail:"}" {
