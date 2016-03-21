@@ -308,8 +308,8 @@ db.users.find( { age: { $gt: 18 }, name: { $exists: true } } ).count()
 ```coffee
 # RethinkDB
 r.table("users").filter(
-    (r.row.has_fields("name"))
-     & (r.row["age"] > 18)
+    r.row.hasFields("name")
+    .and(r.row("age").gt(18))
 ).count()
 ```
 
